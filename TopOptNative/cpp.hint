@@ -1,0 +1,2 @@
+#define TOPOPTNATIVE_API __declspec(dllexport)
+#define TOPOPTNATIVE_API __declspec(dllimport)

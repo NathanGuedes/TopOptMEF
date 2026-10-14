@@ -1,0 +1,12 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="TopOptBridge/TopOptBridge.vcxproj" />
+  <Project Path="TopOptNative/TopOptNative.vcxproj" Id="1ebeefe8-c94b-48c5-8de9-4db655af23ba" />
+  <Project Path="TopOptUI/TopOptUI.csproj">
+    <Platform Solution="Release|x64" Project="x64" />
+  </Project>
+</Solution>
