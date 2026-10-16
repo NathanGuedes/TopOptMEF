@@ -1,66 +1,71 @@
 ﻿<Window x:Class="TopOptUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:oxy="http://oxyplot.org/wpf"
-        mc:Ignorable="d"
         Title="TopOpt MEF - IFF" Height="650" Width="1050"
-        Background="#F4F6F8"
-        WindowStartupLocation="CenterScreen">
-    
+        Background="#F4F6F8" WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style TargetType="Label">
+            <Setter Property="Margin" Value="0,12,0,5"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#333333"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
-            <!-- Linha 0: Cabeçalho com as cores e logo -->
             <RowDefinition Height="80"/>
-            <!-- Linha 1: Restante da aplicação -->
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- CABEÇALHO (Header) - Identidade Visual IF -->
-        <Border Grid.Row="0" Background="#2F9E41" BorderBrush="#E02041" BorderThickness="0,0,0,4">
-            <Grid Margin="20,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
-                <!-- Espaço reservado para a Logo -->
-                <!-- Espaço reservado para a Logo -->
-                <Border Grid.Column="0" Width="60" Height="60" Background="White" CornerRadius="4" VerticalAlignment="Center" Padding="5">
+        <!-- Cabeçalho -->
+        <Border Background="#2F9E41" BorderBrush="#E02041" BorderThickness="0,0,0,4">
+            <StackPanel Orientation="Horizontal" Margin="20,0">
+                <Border Width="60" Height="60" Background="White" CornerRadius="4" Padding="5">
                     <Image Source="Assets/images/logo-iff.jpeg" Stretch="Uniform"/>
                 </Border>
-                
-                <!-- Textos da Instituição -->
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="15,0,0,0">
+                <StackPanel VerticalAlignment="Center" Margin="15,0,0,0">
                     <TextBlock Text="Instituto Federal Fluminense" Foreground="White" FontSize="22" FontWeight="Bold"/>
                     <TextBlock Text="Otimização Topológica e MEF" Foreground="#D0EAC5" FontSize="14" FontWeight="SemiBold"/>
                 </StackPanel>
-            </Grid>
+            </StackPanel>
         </Border>
 
-        <!-- ÁREA PRINCIPAL -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="260"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- PAINEL LATERAL (Configurações) -->
-            <Border Grid.Column="0" Background="White" BorderBrush="#DDDDDD" BorderThickness="0,0,1,0">
+            <!-- Painel lateral -->
+            <Border Background="White" BorderBrush="#DDDDDD" BorderThickness="0,0,1,0">
                 <StackPanel Margin="20">
                     <TextBlock Text="Configurações da Malha" FontWeight="Bold" FontSize="16" Foreground="#2F9E41" Margin="0,0,0,15"/>
 
-                    <Label Content="Elementos X (nelx / largura):" FontWeight="SemiBold" Foreground="#333333" Padding="0,0,0,5"/>
-                    <TextBox x:Name="txtNelx" Text="30" HorizontalContentAlignment="Center" Height="30" VerticalContentAlignment="Center" 
-                             BorderBrush="#CCCCCC" BorderThickness="1" FontSize="14"/>
+                    <Label Content="Nº de elementos em X (nelx):" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtNelx" Text="30"/>
 
-                    <Label Content="Elementos Y (nely / altura):" Margin="0,15,0,5" FontWeight="SemiBold" Foreground="#333333" Padding="0"/>
-                    <TextBox x:Name="txtNely" Text="10" HorizontalContentAlignment="Center" Height="30" VerticalContentAlignment="Center" 
-                             BorderBrush="#CCCCCC" BorderThickness="1" FontSize="14"/>
+                    <Label Content="Nº de elementos em Y (nely):"/>
+                    <TextBox x:Name="txtNely" Text="10"/>
 
-                    <Button x:Name="btGerarMalha" Content="GERAR MALHA" Height="42" Margin="0,30,0,0" Click="btGerarMalha_Click" 
-                            Background="#2F9E41" Foreground="White" FontWeight="Bold" FontSize="14" BorderThickness="0" Cursor="Hand">
+                    <Label Content="Comprimento em X (Lx):"/>
+                    <TextBox x:Name="txtLx" Text="3,0"/>
+
+                    <Label Content="Largura em Y (Ly):"/>
+                    <TextBox x:Name="txtLy" Text="1,0"/>
+
+                    <Button Content="GERAR MALHA" Height="42" Margin="0,25,0,0" Click="btGerarMalha_Click"
+                            Background="#2F9E41" Foreground="White" FontWeight="Bold" FontSize="14"
+                            BorderThickness="0" Cursor="Hand">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="4"/>
@@ -68,11 +73,12 @@
                         </Button.Resources>
                     </Button>
 
-                    <TextBlock x:Name="lblInfo" Margin="0,20,0,0" TextWrapping="Wrap" Foreground="#666666" FontStyle="Italic" TextAlignment="Center"/>
+                    <TextBlock x:Name="lblInfo" Margin="0,20,0,0" TextWrapping="Wrap"
+                               Foreground="#666666" FontStyle="Italic" TextAlignment="Center"/>
                 </StackPanel>
             </Border>
 
-            <!-- ÁREA DO GRÁFICO (OxyPlot) -->
+            <!-- Gráfico -->
             <Border Grid.Column="1" Background="White" Margin="15" CornerRadius="4" BorderBrush="#DDDDDD" BorderThickness="1">
                 <oxy:PlotView x:Name="plotView" Margin="10"/>
             </Border>
