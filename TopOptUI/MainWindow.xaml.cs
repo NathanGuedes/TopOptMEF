@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Globalization;
+using System.Windows;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
@@ -7,108 +9,108 @@ namespace TopOptUI
 {
     public partial class MainWindow : Window
     {
-        private const int LimiteElementos = 500;
+        private const int Limite = 500;
 
         public MainWindow()
         {
             InitializeComponent();
-            btGerarMalha_Click(this, new RoutedEventArgs());
+            btGerarMalha_Click(this, null);
         }
 
-        private bool LerMalha(out int nelx, out int nely)
-        {
-            nelx = nely = 0;
-            if (!int.TryParse(txtNelx.Text, out nelx) || !int.TryParse(txtNely.Text, out nely) ||
-                nelx < 1 || nely < 1 || nelx > LimiteElementos || nely > LimiteElementos)
-            {
-                MessageBox.Show(
-                    $"Informe inteiros entre 1 e {LimiteElementos} para nelx e nely.",
-                    "Valores inválidos", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-            return true;
-        }
+        // Aceita vírgula ou ponto como separador decimal
+        private static bool Num(string t, out double v) =>
+            double.TryParse((t ?? "").Trim().Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out v);
+
+        private static bool Positivo(double v) => v > 0 && !double.IsInfinity(v);
+
+        private static void Aviso(string msg) =>
+            MessageBox.Show(msg, "Valores inválidos", MessageBoxButton.OK, MessageBoxImage.Warning);
 
         private void btGerarMalha_Click(object sender, RoutedEventArgs e)
         {
-            if (!LerMalha(out int nelx, out int nely)) return;
+            if (!int.TryParse(txtNelx.Text, out int nelx) || !int.TryParse(txtNely.Text, out int nely) ||
+                nelx < 1 || nely < 1 || nelx > Limite || nely > Limite)
+            {
+                Aviso($"Informe inteiros entre 1 e {Limite} para nelx e nely.");
+                return;
+            }
 
-            plotView.Model = CriarModeloMalha(nelx, nely);
-            lblInfo.Text = $"{nelx * nely} elementos\n{(nelx + 1) * (nely + 1)} nós";
+            if (!Num(txtLx.Text, out double lx) || !Num(txtLy.Text, out double ly) || !Positivo(lx) || !Positivo(ly))
+            {
+                Aviso("Informe valores numéricos maiores que zero para o comprimento (Lx) e a largura (Ly).");
+                return;
+            }
+
+            plotView.Model = CriarModeloMalha(nelx, nely, lx, ly);
+
+            var ci = CultureInfo.CurrentCulture;
+            lblInfo.Text =
+                $"{nelx * nely} elementos\n" +
+                $"{(nelx + 1) * (nely + 1)} nós\n" +
+                $"Elemento: {(lx / nelx).ToString("G4", ci)} × {(ly / nely).ToString("G4", ci)}";
         }
 
-        private static PlotModel CriarModeloMalha(int nelx, int nely)
+        private static LineSeries Linha(OxyColor cor, double espessura) =>
+            new LineSeries { Color = cor, StrokeThickness = espessura };
+
+        // Adiciona um segmento isolado (o ponto indefinido interrompe a linha)
+        private static void Segmento(LineSeries s, double x1, double y1, double x2, double y2)
         {
+            s.Points.Add(new DataPoint(x1, y1));
+            s.Points.Add(new DataPoint(x2, y2));
+            s.Points.Add(DataPoint.Undefined);
+        }
+
+        private static LinearAxis Eixo(AxisPosition pos, string titulo, bool invertido = false) =>
+            new LinearAxis
+            {
+                Position = pos,
+                Title = titulo,
+                MinimumPadding = 0.05,
+                MaximumPadding = 0.05,
+                StartPosition = invertido ? 1 : 0,
+                EndPosition = invertido ? 0 : 1
+            };
+
+        private static PlotModel CriarModeloMalha(int nelx, int nely, double lx, double ly)
+        {
+            double dx = lx / nelx, dy = ly / nely;
+
             var modelo = new PlotModel
             {
-                Title = $"Malha ({nelx} × {nely})",
-                PlotType = PlotType.Cartesian 
+                Title = $"Malha ({nelx} × {nely} elementos) — {lx:G4} × {ly:G4}",
+                PlotType = PlotType.Cartesian // mantém a proporção real Lx : Ly
             };
+            modelo.Axes.Add(Eixo(AxisPosition.Bottom, "x"));
+            modelo.Axes.Add(Eixo(AxisPosition.Left, "y", invertido: true));
 
-            // Paddings retornados para 0.05 já que a seta foi removida
-            modelo.Axes.Add(new LinearAxis
-            {
-                Position = AxisPosition.Bottom,
-                Title = "x",
-                MinimumPadding = 0.05, 
-                MaximumPadding = 0.05
-            });
-            modelo.Axes.Add(new LinearAxis
-            {
-                Position = AxisPosition.Left,
-                Title = "y",
-                StartPosition = 1, 
-                EndPosition = 0,   
-                MinimumPadding = 0.05,
-                MaximumPadding = 0.05
-            });
+            // Linhas da malha
+            var malha = Linha(OxyColors.LightGray, 1);
+            for (int i = 0; i <= nelx; i++) Segmento(malha, i * dx, 0, i * dx, ly);
+            for (int j = 0; j <= nely; j++) Segmento(malha, 0, j * dy, lx, j * dy);
 
-            // 1. Linhas internas da malha
-            var interior = new LineSeries { Color = OxyColors.LightGray, StrokeThickness = 1 };
-            for (int i = 0; i <= nelx; i++)
+            // Contorno do domínio
+            var contorno = Linha(OxyColors.Black, 2);
+            foreach (var (x, y) in new[] { (0.0, 0.0), (lx, 0), (lx, ly), (0, ly), (0, 0) })
+                contorno.Points.Add(new DataPoint(x, y));
+
+            // Engaste (parede esquerda, x = 0)
+            var engaste = Linha(OxyColors.Firebrick, 5);
+            Segmento(engaste, 0, 0, 0, ly);
+
+            // Hachuras da parede fixa (no máximo 20)
+            var hachuras = Linha(OxyColors.Firebrick, 1.5);
+            int n = Math.Min(nely, 20);
+            for (int k = 0; k <= n; k++)
             {
-                interior.Points.Add(new DataPoint(i, 0));
-                interior.Points.Add(new DataPoint(i, nely));
-                interior.Points.Add(DataPoint.Undefined);
+                double y = k * ly / n;
+                Segmento(hachuras, 0, y, -lx * 0.02, y + ly * 0.02);
             }
-            for (int j = 0; j <= nely; j++)
-            {
-                interior.Points.Add(new DataPoint(0, j));
-                interior.Points.Add(new DataPoint(nelx, j));
-                interior.Points.Add(DataPoint.Undefined);
-            }
-            modelo.Series.Add(interior);
 
-            // 2. Contorno do domínio
-            var contorno = new LineSeries { Color = OxyColors.Black, StrokeThickness = 2 };
-            contorno.Points.Add(new DataPoint(0, 0));
-            contorno.Points.Add(new DataPoint(nelx, 0));
-            contorno.Points.Add(new DataPoint(nelx, nely));
-            contorno.Points.Add(new DataPoint(0, nely));
-            contorno.Points.Add(new DataPoint(0, 0));
+            modelo.Series.Add(malha);
             modelo.Series.Add(contorno);
-
-            // 3. Condição de Contorno: Engaste (Parede do lado esquerdo x = 0)
-            var engaste = new LineSeries 
-            { 
-                Color = OxyColors.Firebrick, 
-                StrokeThickness = 5,
-                Title = "Engaste" 
-            };
-            engaste.Points.Add(new DataPoint(0, 0));
-            engaste.Points.Add(new DataPoint(0, nely));
             modelo.Series.Add(engaste);
-
-            // Adiciona pequenos "hachurados" para ilustrar a parede fixa
-            var hachuras = new LineSeries { Color = OxyColors.Firebrick, StrokeThickness = 1.5 };
-            for (double y = 0; y <= nely; y += Math.Max(1, nely / 20.0))
-            {
-                hachuras.Points.Add(new DataPoint(0, y));
-                hachuras.Points.Add(new DataPoint(-nelx * 0.02, y + nely * 0.02));
-                hachuras.Points.Add(DataPoint.Undefined);
-            }
             modelo.Series.Add(hachuras);
-
             return modelo;
         }
     }
