@@ -27,26 +27,26 @@ public partial class MainWindow
 
     private void btGerarMalha_Click(object sender, RoutedEventArgs? e)
     {
-        if (!int.TryParse(txtNelx.Text, out var nelx) || !int.TryParse(txtNely.Text, out var nely) ||
+        if (!int.TryParse(TxtNelx.Text, out var nelx) || !int.TryParse(TxtNely.Text, out var nely) ||
             nelx < 1 || nely < 1 || nelx > Limite || nely > Limite)
         {
             Aviso($"Informe inteiros entre 1 e {Limite} para nelx e nely.");
             return;
         }
 
-        if (!Num(txtLx.Text, out var lx) || !Num(txtLy.Text, out var ly) || !Positivo(lx) || !Positivo(ly))
+        if (!Num(TxtLx.Text, out var lx) || !Num(TxtLy.Text, out var ly) || !Positivo(lx) || !Positivo(ly))
         {
             Aviso("Informe valores numéricos maiores que zero para o comprimento (Lx) e a largura (Ly).");
             return;
         }
 
-        plotView.Model = CriarModeloMalha(nelx, nely, lx, ly);
+        PlotView.Model = CriarModeloMalha(nelx, nely, lx, ly);
 
         var ci = CultureInfo.CurrentCulture;
-        lblInfo.Text =
-            $"{nelx * nely} elementos\n" +
-            $"{(nelx + 1) * (nely + 1)} nós\n" +
-            $"Elemento: {(lx / nelx).ToString("G4", ci)} × {(ly / nely).ToString("G4", ci)}";
+        // LblInfo.Text =
+        //     $"{nelx * nely} elementos\n" +
+        //     $"{(nelx + 1) * (nely + 1)} nós\n" +
+        //     $"Elemento: {(lx / nelx).ToString("G4", ci)} × {(ly / nely).ToString("G4", ci)}";
     }
 
     private static LineSeries Linha(OxyColor cor, double espessura) => new() { Color = cor, StrokeThickness = espessura };
@@ -59,15 +59,13 @@ public partial class MainWindow
         s.Points.Add(DataPoint.Undefined);
     }
 
-    private static LinearAxis Eixo(AxisPosition pos, string titulo, bool invertido = false) =>
+    private static LinearAxis Eixo(AxisPosition pos, string titulo) =>
         new()
         {
             Position = pos,
             Title = titulo,
             MinimumPadding = 0.05,
-            MaximumPadding = 0.05,
-            StartPosition = invertido ? 1 : 0,
-            EndPosition = invertido ? 0 : 1
+            MaximumPadding = 0.05
         };
 
     private static PlotModel CriarModeloMalha(int nelx, int nely, double lx, double ly)
@@ -80,7 +78,7 @@ public partial class MainWindow
             PlotType = PlotType.Cartesian // mantém a proporção real Lx : Ly
         };
         modelo.Axes.Add(Eixo(AxisPosition.Bottom, "x"));
-        modelo.Axes.Add(Eixo(AxisPosition.Left, "y", invertido: true));
+        modelo.Axes.Add(Eixo(AxisPosition.Left, "y"));
 
         // Linhas da malha
         var malha = Linha(OxyColors.LightGray, 1);
@@ -102,7 +100,7 @@ public partial class MainWindow
         for (var k = 0; k <= n; k++)
         {
             var y = k * ly / n;
-            Segmento(hachuras, 0, y, -lx * 0.02, y + ly * 0.02);
+            Segmento(hachuras, 0, y, -lx * 0.02, y - ly * 0.02);
         }
 
         modelo.Series.Add(malha);

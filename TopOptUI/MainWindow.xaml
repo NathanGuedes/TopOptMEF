@@ -52,16 +52,16 @@
                     <TextBlock Text="Configurações da Malha" FontWeight="Bold" FontSize="16" Foreground="#2F9E41" Margin="0,0,0,15"/>
 
                     <Label Content="Nº de elementos em X (nelx):" Margin="0,0,0,5"/>
-                    <TextBox x:Name="txtNelx" Text="30"/>
+                    <TextBox x:Name="TxtNelx" Text="30"/>
 
                     <Label Content="Nº de elementos em Y (nely):"/>
-                    <TextBox x:Name="txtNely" Text="10"/>
+                    <TextBox x:Name="TxtNely" Text="10"/>
 
                     <Label Content="Comprimento em X (Lx):"/>
-                    <TextBox x:Name="txtLx" Text="3,0"/>
+                    <TextBox x:Name="TxtLx" Text="3,0"/>
 
                     <Label Content="Largura em Y (Ly):"/>
-                    <TextBox x:Name="txtLy" Text="1,0"/>
+                    <TextBox x:Name="TxtLy" Text="1,0"/>
 
                     <Button Content="GERAR MALHA" Height="42" Margin="0,25,0,0" Click="btGerarMalha_Click"
                             Background="#2F9E41" Foreground="White" FontWeight="Bold" FontSize="14"
@@ -73,14 +73,14 @@
                         </Button.Resources>
                     </Button>
 
-                    <TextBlock x:Name="lblInfo" Margin="0,20,0,0" TextWrapping="Wrap"
+                    <TextBlock x:Name="LblInfo" Margin="0,20,0,0" TextWrapping="Wrap"
                                Foreground="#666666" FontStyle="Italic" TextAlignment="Center"/>
                 </StackPanel>
             </Border>
 
             <!-- Gráfico -->
             <Border Grid.Column="1" Background="White" Margin="15" CornerRadius="4" BorderBrush="#DDDDDD" BorderThickness="1">
-                <oxy:PlotView x:Name="plotView" Margin="10"/>
+                <oxy:PlotView x:Name="PlotView" Margin="10"/>
             </Border>
         </Grid>
     </Grid>
