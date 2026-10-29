@@ -43,10 +43,10 @@ public partial class MainWindow
         PlotView.Model = CriarModeloMalha(nelx, nely, lx, ly);
 
         var ci = CultureInfo.CurrentCulture;
-        // LblInfo.Text =
-        //     $"{nelx * nely} elementos\n" +
-        //     $"{(nelx + 1) * (nely + 1)} nós\n" +
-        //     $"Elemento: {(lx / nelx).ToString("G4", ci)} × {(ly / nely).ToString("G4", ci)}";
+        LblInfo.Text =
+             $"{nelx * nely} elementos\n" +
+             $"{(nelx + 1) * (nely + 1)} nós\n" +
+             $"Elemento: {(lx / nelx).ToString("G4", ci)} × {(ly / nely).ToString("G4", ci)}";
     }
 
     private static LineSeries Linha(OxyColor cor, double espessura) => new() { Color = cor, StrokeThickness = espessura };
