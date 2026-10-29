@@ -26,10 +26,31 @@ git clone https://github.com/NathanGuedes/TopOptMEF.git
 cd TopOptMEF
 ```
 
-Depois, configure o Git para usar `merge` ao fazer `git pull` (combina com o fluxo deste guia):
+> Se você usa chave SSH configurada no GitHub, pode clonar assim:
+> ```bash
+> git clone git@github.com:NathanGuedes/TopOptMEF.git
+> ```
+
+Depois, configure seu nome e e-mail. Eles aparecem em cada commit que você fizer, então use o mesmo e-mail da sua conta no GitHub:
+
+```bash
+git config --global user.name "Seu Nome"
+git config --global user.email "seu-email@exemplo.com"
+```
+
+> Com `--global`, a configuração vale para todos os projetos do seu computador e só precisa ser feita uma vez. Para valer apenas neste projeto, rode os comandos dentro da pasta do projeto sem o `--global`.
+
+Por fim, configure o Git para usar `merge` ao fazer `git pull` (combina com o fluxo deste guia):
 
 ```bash
 git config pull.rebase false
+```
+
+Para conferir se ficou tudo certo:
+
+```bash
+git config user.name
+git config user.email
 ```
 
 > Se você já tem o projeto clonado, pule para o passo 2.
@@ -135,7 +156,7 @@ Em caso de dúvida sobre qual código manter, **converse com quem fez a outra al
 
 | O que fazer | Comando |
 |---|---|
-| Clonar o projeto (1ª vez) | `git clone URL-DO-REPOSITORIO` |
+| Clonar o projeto (1ª vez) | `git clone https://github.com/NathanGuedes/TopOptMEF.git` |
 | Criar branch | `git checkout -b seunome/tarefa` |
 | Enviar alterações | `git push origin seunome/tarefa` |
 | Atualizar com a main | `git merge origin/main` |
