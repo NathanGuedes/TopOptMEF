@@ -17,7 +17,24 @@ O fluxo é simples: cada pessoa trabalha na sua própria branch e, ao terminar, 
 
 ## Passo a passo
 
-### 1. Criar sua branch
+### 1. Clonar o repositório (apenas na primeira vez)
+
+Baixe o projeto para o seu computador:
+
+```bash
+git clone https://github.com/NathanGuedes/TopOptMEF.git
+cd TopOptMEF
+```
+
+Depois, configure o Git para usar `merge` ao fazer `git pull` (combina com o fluxo deste guia):
+
+```bash
+git config pull.rebase false
+```
+
+> Se você já tem o projeto clonado, pule para o passo 2.
+
+### 2. Criar sua branch
 
 Sempre parta da `main` atualizada:
 
@@ -29,7 +46,7 @@ git checkout -b seunome/descricao-da-tarefa
 
 Exemplos de nomes: `maria/tela-de-login`, `joao/correcao-bug-pagamento`.
 
-### 2. Trabalhar e fazer commits
+### 3. Trabalhar e fazer commits
 
 ```bash
 git add .
@@ -42,7 +59,7 @@ Dicas:
 - Escreva mensagens claras, explicando **o que** mudou e **por quê**.
 - Envie (`push`) sua branch com frequência para não perder trabalho.
 
-### 3. Atualizar sua branch com a `main`
+### 4. Atualizar sua branch com a `main`
 
 Se outras pessoas mesclaram coisas na `main` enquanto você trabalhava, traga essas mudanças para a sua branch:
 
@@ -60,9 +77,9 @@ git push origin seunome/descricao-da-tarefa
 
 > Use `merge` (e não `rebase`) para atualizar sua branch. Assim o histórico é preservado.
 
-### 4. Mesclar na `main` (ao terminar)
+### 5. Mesclar na `main` (ao terminar)
 
-1. Atualize sua branch com a `main` (passo 3) e **teste tudo**.
+1. Atualize sua branch com a `main` (passo 4) e **teste tudo**.
 2. Vá para a `main` e mescle:
 
 ```bash
@@ -76,7 +93,7 @@ A opção `--no-ff` cria um commit de merge e mantém visível no histórico ond
 
 3. **Não apague a branch.** Ela continua no repositório e você pode voltar a usá-la.
 
-### 5. Continuar trabalhando depois do merge
+### 6. Continuar trabalhando depois do merge
 
 Pode reaproveitar a mesma branch ou criar uma nova a partir da `main`. Se reaproveitar, atualize-a primeiro:
 
@@ -118,7 +135,22 @@ Em caso de dúvida sobre qual código manter, **converse com quem fez a outra al
 
 | O que fazer | Comando |
 |---|---|
+| Clonar o projeto (1ª vez) | `git clone URL-DO-REPOSITORIO` |
 | Criar branch | `git checkout -b seunome/tarefa` |
 | Enviar alterações | `git push origin seunome/tarefa` |
 | Atualizar com a main | `git merge origin/main` |
 | Mesclar na main | `git checkout main && git pull && git merge --no-ff seunome/tarefa && git push` |
+
+---
+
+## Configuração do repositório (para administradores)
+
+### Adicionar este guia ao repositório
+
+Coloque o `README.md` na raiz do projeto e envie para a `main`:
+
+```bash
+git add README.md
+git commit -m "Adiciona guia de colaboração"
+git push origin main
+```
